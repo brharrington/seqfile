@@ -1,0 +1,75 @@
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+  }
+}
+
+apply plugin: 'java'
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+  jcenter()
+}
+
+dependencies {
+  compile('org.apache.hadoop:hadoop-common:2.5.1') {
+    exclude group: 'commons-logging'
+    exclude group: 'commons-httpclient'
+    exclude group: 'commons-el'
+    exclude group: 'commons-io'
+    exclude group: 'commons-cli'
+    exclude group: 'commons-net'
+    exclude group: 'commons-codec'
+    exclude group: 'org.mortbay.jetty'
+    exclude group: 'tomcat'
+    exclude group: 'javax.servlet.jsp'
+    exclude group: 'com.sun.jersey'
+    exclude group: 'net.java.dev.jets3t'
+    exclude group: 'org.slf4j'
+    exclude group: 'log4j'
+    exclude group: 'org.codehaus.jackson'
+    exclude group: 'com.google.protobuf'
+    exclude group: 'com.jcraft'
+    exclude group: 'org.apache.zookeeper'
+    exclude group: 'org.apache.commons'
+    exclude group: 'xmlenc'
+    exclude group: 'org.apache.hadoop', module: 'hadoop-auth'
+  }
+  testCompile 'junit:junit:4.12'
+}
+
+task proguard(type: proguard.gradle.ProGuardTask) {
+
+  def javaHome = System.properties['java.home']
+
+  dontwarn
+
+  target           '1.8'
+  optimizations    '!class/unboxing/enum'
+
+  injars           'build/libs/seqfile.jar'
+  injars           configurations.runtime
+  outjars          'build/libs/seqfile-out.jar', filter: '!**.java,!**.html,!**.dtd,!javax/**'
+  libraryjars      "${javaHome}/lib/rt.jar"
+
+  repackageclasses 'io.github.brharrington.seqfile.impl'
+
+  keep 'public class io.github.brharrington.seqfile.** {  \
+    public protected private *; \
+  }'
+
+  keep 'class org.apache.hadoop.io.** { \
+    public protected private *; \
+  }'
+
+  keepclassmembers 'enum * { \
+    public static **[] values(); \
+    public static ** valueOf(java.lang.String); \
+  }'
+}
