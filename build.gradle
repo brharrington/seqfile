@@ -8,13 +8,90 @@ buildscript {
   }
 }
 
+plugins {
+  id "com.jfrog.bintray" version "1.1"
+}
+
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
+group = 'io.github.brharrington'
+version = '0.10'
+
 repositories {
   jcenter()
+}
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+  from sourceSets.main.allSource
+  classifier 'sources'
+  extension 'jar'
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+  from javadoc.destinationDir
+  classifier 'javadoc'
+  extension 'jar'
+}
+
+task proguard(type: proguard.gradle.ProGuardTask) {
+
+  def javaHome = System.properties['java.home']
+
+  dontwarn
+
+  target           '1.8'
+  optimizations    '!class/unboxing/enum'
+
+  injars           'build/libs/seqfile.jar'
+  injars           configurations.runtime
+  outjars          'build/libs/seqfile-proguard.jar', filter: '!**.java,!**.html,!**.dtd,!javax/**'
+  libraryjars      "${javaHome}/lib/rt.jar"
+
+  repackageclasses 'io.github.brharrington.seqfile.impl'
+
+  keep 'public class io.github.brharrington.seqfile.** {  \
+    public protected private *; \
+  }'
+
+  keep 'class org.apache.hadoop.io.** { \
+    public protected private *; \
+  }'
+
+  keepclassmembers 'enum * { \
+    public static **[] values(); \
+    public static ** valueOf(java.lang.String); \
+  }'
+}
+
+task swapJar(dependsOn:[jar, proguard]) << {
+  println("Replacing original jar with uber jar.")
+  file("build/libs/seqfile-${project.version}.jar")
+    .renameTo(file("build/libs/seqfile-${project.version}-original.jar"))
+  file("build/libs/seqfile-proguard.jar")
+    .renameTo(file("build/libs/seqfile-${project.version}.jar"))
+}
+
+artifacts {
+  archives sourcesJar
+  archives javadocJar
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+
+      pom.withXml {
+        asNode().dependencies.replaceNode { new Node(null, "dependencies") }
+      }
+    }
+  }
 }
 
 dependencies {
@@ -44,32 +121,28 @@ dependencies {
   testCompile 'junit:junit:4.12'
 }
 
-task proguard(type: proguard.gradle.ProGuardTask) {
+bintray {
+  user = 'user'
+  key = 'key'
 
-  def javaHome = System.properties['java.home']
-
-  dontwarn
-
-  target           '1.8'
-  optimizations    '!class/unboxing/enum'
-
-  injars           'build/libs/seqfile.jar'
-  injars           configurations.runtime
-  outjars          'build/libs/seqfile-out.jar', filter: '!**.java,!**.html,!**.dtd,!javax/**'
-  libraryjars      "${javaHome}/lib/rt.jar"
-
-  repackageclasses 'io.github.brharrington.seqfile.impl'
-
-  keep 'public class io.github.brharrington.seqfile.** {  \
-    public protected private *; \
-  }'
-
-  keep 'class org.apache.hadoop.io.** { \
-    public protected private *; \
-  }'
-
-  keepclassmembers 'enum * { \
-    public static **[] values(); \
-    public static ** valueOf(java.lang.String); \
-  }'
+  publications = ['mavenJava']
+  dryRun = true
+  publish = true
+  pkg {
+    repo = 'maven'
+    name = project.name
+    desc = 'Read/write sequence files.'
+    websiteUrl = 'https://github.com/brharrington/seqfile'
+    issueTrackerUrl = 'https://github.com/brharrington/seqfile/issues'
+    vcsUrl = 'https://github.com/brharrington/seqfile.git'
+    licenses = ['Apache-2.0']
+    labels = []
+    publicDownloadNumbers = true
+    attributes= [:]
+    version {
+      name = project.version
+      vcsTag = project.version
+      attributes = [:]
+    }
+  }
 }
