@@ -9,6 +9,7 @@ buildscript {
 }
 
 plugins {
+  id 'nebula.nebula-release' version '4.0.1'
   id "com.jfrog.bintray" version "1.6"
 }
 
@@ -19,7 +20,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 group = 'io.github.brharrington'
-version = '0.11'
+//version = '0.11'
 
 repositories {
   jcenter()
