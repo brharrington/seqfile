@@ -8,6 +8,31 @@ several different logging libraries.
 This setup uses proguard to remove unnecessary classes and restrict the exposed
 classes to just `org.apache.hadoop.io.**`.
 
+## Usage
+
+The library can is available via jcenter, for gradle use the following:
+
+```
+compile 'io.github.brharrington:seqfile:0.12.0'
+```
+
+Simple example of copying a sequence file:
+
+```java
+try (SequenceFile.Reader reader = SeqFiles.reader(input);
+     SequenceFile.Writer writer = SeqFiles.writer(output, keyClass, valueClass)) {
+  final Writable k = keyClass.newInstance();
+  final Writable v = valueClass.newInstance();
+  for (int i = 1; reader.next(k, v); ++i) {
+    System.out.printf("%10d: key [%s], value [%s]%n", i, k.toString(), v.toString());
+    writer.append(k, v);
+  }
+}
+```
+
+See [test cases](https://github.com/brharrington/seqfile/blob/master/src/test/java/io/github/brharrington/seqfile/SeqFilesTest.java)
+for further examples.
+
 ## Building
 
 To create a new copy of the jar:
