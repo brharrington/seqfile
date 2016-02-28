@@ -13,7 +13,7 @@ classes to just `org.apache.hadoop.io.**`.
 The library can is available via jcenter, for gradle use the following:
 
 ```
-compile 'io.github.brharrington:seqfile:0.12.0'
+compile 'io.github.brharrington:seqfile:0.13.0'
 ```
 
 Simple example of copying a sequence file:
