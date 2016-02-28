@@ -75,6 +75,8 @@ task swapJar(dependsOn:[jar, proguard]) << {
     .renameTo(file("build/libs/seqfile-${project.version}.jar"))
 }
 
+build.dependsOn(['swapJar'])
+
 artifacts {
   archives sourcesJar
   archives javadocJar
