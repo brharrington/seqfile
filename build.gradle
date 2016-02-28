@@ -19,7 +19,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 group = 'io.github.brharrington'
-version = '0.10'
+version = '0.11'
 
 repositories {
   jcenter()
@@ -124,8 +124,8 @@ dependencies {
 }
 
 bintray {
-  user = 'user'
-  key = 'key'
+  user = System.getenv('BINTRAY_USER')
+  key = System.getenv('BINTRAY_KEY')
 
   publications = ['mavenJava']
   dryRun = true
