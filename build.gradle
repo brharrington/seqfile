@@ -20,7 +20,6 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 group = 'io.github.brharrington'
-//version = '0.11'
 
 repositories {
   jcenter()
