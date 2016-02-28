@@ -46,7 +46,7 @@ task proguard(type: proguard.gradle.ProGuardTask) {
   target           '1.8'
   optimizations    '!class/unboxing/enum'
 
-  injars           'build/libs/seqfile.jar'
+  injars           "build/libs/seqfile-${project.version}.jar"
   injars           configurations.runtime
   outjars          'build/libs/seqfile-proguard.jar', filter: '!**.java,!**.html,!**.dtd,!javax/**'
   libraryjars      "${javaHome}/lib/rt.jar"
