@@ -61,6 +61,8 @@ task proguard(type: proguard.gradle.ProGuardTask) {
 
   repackageclasses 'io.github.brharrington.seqfile.impl'
 
+  keepattributes   'Signature'
+
   keep 'public class io.github.brharrington.seqfile.** {  \
     public protected private *; \
   }'
