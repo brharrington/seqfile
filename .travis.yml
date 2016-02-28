@@ -2,7 +2,8 @@ language: java
 jdk:
 - oraclejdk8
 sudo: false
-script: ./gradlew clean build
+install: "./installViaTravis.sh"
+script: "./buildViaTravis.sh"
 cache:
   directories:
   - $HOME/.gradle
