@@ -26,6 +26,14 @@ repositories {
   jcenter()
 }
 
+jar {
+  manifest {
+    attributes(
+      'Main-Class': 'io.github.brharrington.seqfile.Main'
+    )
+  }
+}
+
 task sourcesJar(type: Jar, dependsOn:classes) {
   from sourceSets.main.allSource
   classifier 'sources'
