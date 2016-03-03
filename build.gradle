@@ -71,6 +71,10 @@ task proguard(type: proguard.gradle.ProGuardTask) {
     public protected private *; \
   }'
 
+  keep 'class org.apache.hadoop.fs.FSInputStream { \
+    public protected private *; \
+  }'
+
   keepclassmembers 'enum * { \
     public static **[] values(); \
     public static ** valueOf(java.lang.String); \
