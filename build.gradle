@@ -4,13 +4,13 @@ buildscript {
     jcenter()
   }
   dependencies {
-    classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+    classpath 'net.sf.proguard:proguard-gradle:6.2.2'
   }
 }
 
 plugins {
-  id 'nebula.nebula-release' version '4.0.1'
-  id "com.jfrog.bintray" version "1.6"
+  id 'nebula.release' version '15.3.0'
+  id "com.jfrog.bintray" version "1.8.5"
 }
 
 apply plugin: 'java'
@@ -81,12 +81,14 @@ task proguard(type: proguard.gradle.ProGuardTask) {
   }'
 }
 
-task swapJar(dependsOn:[jar, proguard]) << {
-  println("Replacing original jar with uber jar.")
-  file("build/libs/seqfile-${project.version}.jar")
-    .renameTo(file("build/libs/seqfile-${project.version}-original.jar"))
-  file("build/libs/seqfile-proguard.jar")
-    .renameTo(file("build/libs/seqfile-${project.version}.jar"))
+task swapJar(dependsOn:[jar, proguard]) {
+  doLast {
+    println("Replacing original jar with uber jar.")
+    file("build/libs/seqfile-${project.version}.jar")
+      .renameTo(file("build/libs/seqfile-${project.version}-original.jar"))
+    file("build/libs/seqfile-proguard.jar")
+      .renameTo(file("build/libs/seqfile-${project.version}.jar"))
+  }
 }
 
 build.dependsOn(['swapJar'])
